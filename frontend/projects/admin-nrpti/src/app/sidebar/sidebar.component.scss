@@ -1,0 +1,106 @@
+@use "assets/styles/base/base.scss" as *;
+
+/* The side navigation menu */
+.sidebar {
+  margin: 0;
+  padding: 20px 0 15px 0px;
+  width: $side-content-width;
+  background-color: #38598a;
+  position: fixed;
+
+  /* Probably should not hardcode to account for the footer */
+  height: calc(100% - 67.2px - 41px);
+  overflow: auto;
+  transition: width 0.3s;
+
+  @media screen and (max-width: 768px) {
+    height: calc(100% - 55px - 41px);
+  }
+}
+
+/* Sidebar links */
+.sidebar a {
+  display: block;
+  color: white;
+  padding: 8px 12px 14px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.full-nav {
+  padding: 0 0 4px 5px;
+}
+
+.mine-nav {
+  background: $side-content-nested-bg-color;
+  padding: 0 0 12px 5px;
+}
+
+.sidebar .mines-menu {
+  padding: 6px 16px 8px;
+  padding-left: 0.4rem;
+  font-size: 14px;
+
+  .material-icons {
+    top: 2px;
+  }
+}
+
+.sidebar .mines-menu-icon {
+  margin-right: 0.2rem !important;
+}
+
+/* Active/current link */
+.sidebar a.active {
+  color: #fcb118;
+}
+
+.sidebar .dropdown-btn {
+  border-radius: 4px 0 0 4px;
+}
+
+/* Links on mouse-over */
+.sidebar a:hover:not(.active) {
+  background-color: #fcb118;
+  color: #036;
+}
+
+/* Style the sidenav links and the dropdown button */
+.sidenav a,
+.dropdown-btn {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 20px;
+  color: #818181;
+  display: block;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: 0.3s;
+}
+
+/* On mouse-over */
+.sidenav a:hover,
+.dropdown-btn:hover {
+  color: #f1f1f1;
+}
+
+/* Main content */
+.main {
+  margin-left: $side-content-width; /* Same as the width of the sidenav */
+  font-size: 20px; /* Increased text to enable scrolling */
+  padding: 0 10px;
+}
+
+/* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
+.mine-details-dropdown-container {
+  padding-left: 8px;
+}
+
+.material-icons {
+  position: relative;
+  top: 5px;
+}

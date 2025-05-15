@@ -1,0 +1,21 @@
+@use 'assets/styles/base/base.scss' as *;
+
+:host-context(tr) {
+  &:hover {
+    background-color: $table-row-hover-bg;
+    cursor: pointer;
+  }
+}
+
+.published-green {
+  color: $mine-published-font-color;
+}
+
+// hide dropdown caret
+.dropdown-toggle::after {
+  display: none;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}

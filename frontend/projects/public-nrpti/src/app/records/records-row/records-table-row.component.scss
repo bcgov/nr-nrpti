@@ -1,0 +1,94 @@
+@use 'assets/styles/base/base.scss' as *;
+
+// style the wrapping <tr></tr> tags
+:host-context(tr) {
+  border: 1px solid $mn-border-color;
+  border-radius: 6px;
+  margin-bottom: 0.25rem;
+
+  &:hover {
+    background-color: $table-row-hover-bg;
+  }
+}
+
+.table-card-outer {
+  position: relative;
+
+  .table-card {
+    margin-left: 16px;
+    margin-right: 16px;
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+    cursor: pointer;
+
+    .table-card-inner {
+      display: grid;
+      grid-gap: 0.25rem;
+      // TODO enable this extra column when documents are available
+      grid-template-columns:
+      3fr 2fr 2fr 3fr 1.8fr 20px;
+
+      .card-col {
+        display: grid;
+        grid-template-rows: min-content;
+
+        .card-col-label {
+          font-weight: 600;
+        }
+
+        .truncate {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      .table-card-inner {
+        grid-gap: 0.5rem;
+        grid-template-columns: none;
+
+        .card-col {
+          grid-gap: 0.625rem;
+          grid-template-columns: 1fr 2fr;
+        }
+      }
+    }
+  }
+
+  .detailsContainerButtons {
+    position: absolute;
+    top: 4px;
+    right: 0;
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    align-items: top;
+
+    i {
+      font-size: 3rem;
+    }
+
+    .closeDetailsContainerButton {
+      background: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+
+      i {
+        font-size: 2.3rem;
+      }
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .detailsContainerButtons {
+      top: 4px;
+      right: -4px;
+    }
+  }
+}

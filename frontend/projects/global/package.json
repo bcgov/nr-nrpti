@@ -1,0 +1,29 @@
+{
+  "name": "nrpti-angular-components",
+  "version": "0.0.2",
+  "keywords": [
+    "Angular",
+    "Library",
+    "BCGov"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcgov/nrpti-angular-components"
+  },
+  "peerDependencies": {
+    "@angular/common": "~19.2.2",
+    "@angular/core": "~19.2.2",
+    "@angular/forms": "~19.2.2",
+    "@angular/platform-browser": "~19.2.2",
+    "@angular/platform-browser-dynamic": "~19.2.2",
+    "@angular/router": "~19.2.2",
+    "@angular-devkit/build-angular": "~19.2.3",
+    "@ng-bootstrap/ng-bootstrap": "~18.0.0",
+    "core-js": "^2.6.10",
+    "karma": "~6.4.4",
+    "moment": "^2.24.0",
+    "ngx-pagination": "^6.0.3",
+    "rxjs": "7.4.0",
+    "zone.js": "^0.15.0"
+  }
+}

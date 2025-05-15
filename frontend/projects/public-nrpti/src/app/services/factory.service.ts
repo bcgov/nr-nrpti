@@ -1,0 +1,265 @@
+import { Injectable, Injector, ViewContainerRef, Type, ComponentRef } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { ApiService } from './api.service';
+import { SearchService, SearchResults, InjectComponentService } from 'nrpti-angular-components';
+import { ApplicationAgencyService } from './application-agency.service';
+import { ActService } from './acts.service';
+/**
+ * Facade service for all public-nrced services.
+ *
+ * Note: All services should be accessed through this parent service only.
+ *
+ * @export
+ * @class FactoryService
+ */
+@Injectable({ providedIn: 'root' })
+export class FactoryService {
+  private _apiService: ApiService;
+  private _searchService: SearchService;
+  private _injectComponentService: InjectComponentService;
+  private _applicationAgencyService: ApplicationAgencyService;
+  private _actService: ActService;
+
+  constructor(private injector: Injector) {
+    // The following items are loaded by a file that is only present on cluster builds.
+    // Locally, this will be empty and local defaults will be used.
+    // const remote_api_path = window.localStorage.getItem('from_admin_server--remote_api_path');
+    // // const remote_public_path = window.localStorage.getItem('from_admin_server--remote_public_path');  // available in case its ever needed
+    // const deployment_env = window.localStorage.getItem('from_admin_server--deployment_env');
+    // this._pathAPI = 'http://localhost:3000/api/public';
+  }
+
+  /**
+   * Inject record service if it hasn't already been injected.
+   *
+   * @readonly
+   * @type {SearchService}
+   * @memberof FactoryService
+   */
+  public get searchService(): SearchService {
+    if (!this._searchService) {
+      this._searchService = this.injector.get(SearchService);
+    }
+    return this._searchService;
+  }
+
+  /**
+   * Inject api service if it hasn't already been injected.
+   *
+   * @readonly
+   * @type {ApiService}
+   * @memberof FactoryService
+   */
+  public get apiService(): ApiService {
+    if (!this._apiService) {
+      this._apiService = this.injector.get(ApiService);
+    }
+    return this._apiService;
+  }
+
+  /**
+   * Inject inject component service if it hasn't already been injected.
+   *
+   * @readonly
+   * @type {InjectComponentService}
+   * @memberof FactoryService
+   */
+  public get injectComponentService(): InjectComponentService {
+    if (!this._injectComponentService) {
+      this._injectComponentService = this.injector.get(InjectComponentService);
+    }
+    return this._injectComponentService;
+  }
+
+  /**
+   * Inject agency service if it hasn't already been injected.
+   *
+   * @readonly
+   * @type {ApiService}
+   * @memberof FactoryService
+   */
+  public get applicationAgencyService(): ApplicationAgencyService {
+    if (!this._applicationAgencyService) {
+      this._applicationAgencyService = this.injector.get(ApplicationAgencyService);
+    }
+    return this._applicationAgencyService;
+  }
+
+  /**
+   * Inject agency service if it hasn't already been injected.
+   *
+   * @readonly
+   * @type {ApiService}
+   * @memberof FactoryService
+   */
+  public get actService(): ActService {
+    if (!this._actService) {
+      this._actService = this.injector.get(ActService);
+    }
+    return this._actService;
+  }
+  /**
+   * Return the record for the given _id.
+   *
+   * @param {string} recordId record _id.
+   * @param {string} schema model schema name for this record type.
+   * @returns {Observable<SearchResults[]>} An observable that emits the matching record or null if none found.
+   * @memberof FactoryService
+   */
+  public getRecord(recordId: string, schema: string, populate = false): Observable<SearchResults[]> {
+    if (!recordId || schema === undefined) {
+      return of([] as SearchResults[]);
+    }
+    return this.searchService.getItem(this.apiService.pathAPI, recordId, schema, populate);
+  }
+
+  /**
+   * Return matching records for the given search parameters.
+   *
+   * @param {string} keys
+   * @param {string[]} dataset
+   * @param {any[]} fields
+   * @param {number} [pageNum=1]
+   * @param {number} [pageSize=10]
+   * @param {string} [sortBy=null]
+   * @param {object} [and={}]
+   * @param {boolean} [populate=false]
+   * @param {object} [or={}]
+   * @param {object} [subset=[]]
+   * @param {object} [nor={}]
+   * @returns {Observable<any[]>}
+   * @memberof FactoryService
+   */
+  public getRecords(
+    keys: string,
+    dataset: string[],
+    fields: any[],
+    pageNum: number = 0,
+    pageSize: number = 25,
+    sortBy: string = null,
+    and: object = {},
+    populate: boolean = false,
+    or: object = {},
+    subset: string[] = [],
+    nor: object = {},
+    _in: object = {}
+  ): Observable<any[]> {
+    return this.searchService.getSearchResults(
+      this.getApiPath(),
+      keys,
+      dataset,
+      fields,
+      pageNum,
+      pageSize,
+      sortBy,
+      and,
+      populate,
+      or,
+      subset,
+      nor,
+      _in
+    );
+  }
+
+  /**
+   * Get documents for the given Document _ids
+   *
+   * @param {string[]} documentIds array of document _ids
+   * @returns {Observable<any[]>}
+   * @memberof FactoryService
+   */
+  public getDocuments(documentIds: string[]): Observable<any[]> {
+    if (!documentIds || !documentIds.length) {
+      return of([]);
+    }
+
+    return this.getRecords(null, ['Document'], null, null, null, null, null, null, {
+      _id: documentIds.join(',')
+    });
+  }
+
+  /**
+   * Get list of BCMI Mines
+   *
+   * @returns {Observable<any[]>}
+   * @memberof FactoryService
+   */
+  public getMines(): Observable<any[]> {
+    return this.getRecords(null, ['MineBCMI'], null, null, 1000, null, null, null, null);
+  }
+
+  // public getFullList(schema: string): Observable<Record[]> {
+  //   return this.searchService.getFullList(schema);
+  // }
+
+  /**
+   * Get the current environment.
+   *
+   * @returns {String} environment.
+   * @memberof FactoryService
+   */
+  public getEnvironment(): string {
+    return this.apiService.env;
+  }
+
+  /**
+   * Get the current environment.
+   *
+   * @returns {String} environment.
+   * @memberof FactoryService
+   */
+  public getApiPath(): string {
+    return this.apiService.pathAPI;
+  }
+
+  /**
+   * Sends request to start a task.
+   *
+   * @param {*} obj request payload
+   * @returns {*}
+   * @memberof FactoryService
+   */
+  public startTask(obj: any): any {
+    return this.apiService.startTask(obj);
+  }
+
+  /**
+   * Resolves, Builds, and Injects a component of type T into the provided view.
+   *
+   * @param {ViewContainerRef} viewContainerRef
+   * @param {Type<any>} comonentToInject
+   * @returns {ComponentRef<any>}
+   * @memberof FactoryService
+   */
+  public injectComponentIntoView(viewContainerRef: ViewContainerRef, comonentToInject: Type<any>): ComponentRef<any> {
+    return this.injectComponentService.injectComponentIntoView(viewContainerRef, comonentToInject);
+  }
+
+  /**
+   * Get agency data. If data is not cached, fetch it from the ApplicationAgencyService.
+   * @returns {Observable<void>} An observable that resolves when agency data is fetched.
+   * @memberof FactoryService
+   */
+  public getApplicationAgencyService(): Observable<void> {
+    if (Object.keys(this.applicationAgencyService.getAgencies).length === 0) {
+      this.applicationAgencyService.refreshAgencies().subscribe(() => {
+        this.applicationAgencyService.getAgencies();
+      });
+    }
+    return this.applicationAgencyService.refreshAgencies();
+  }
+
+  /**
+   * Get act data. If data is not cached, fetch it from the actService.
+   * @returns {Observable<void>} An observable that resolves when agency data is fetched.
+   * @memberof FactoryService
+   */
+  public getActService(): Observable<void> {
+    if (this.actService.getAllActsAndRegulations.length === 0) {
+      this.actService.refreshAct().subscribe(() => {
+        this.actService.getAllActsAndRegulations();
+      });
+    }
+    return this.actService.refreshAct();
+  }
+}
