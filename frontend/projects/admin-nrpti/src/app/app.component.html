@@ -1,0 +1,25 @@
+<div class="spinner-container" *ngIf="mainLoading">
+  <div class="spinner-new rotating"></div>
+</div>
+
+<app-header></app-header>
+
+<div class="app-body">
+  <div class="side-content" [ngClass]="{ sideContentClosed: !showSideContent }">
+    <app-sidebar></app-sidebar>
+    <app-toggle-button class="app-toggle"></app-toggle-button>
+  </div>
+  <div class="body-content" id="scrollTop">
+    <span class="breadcrumb-section">
+      <lib-breadcrumb (navigateBreadcrumb)="navigateBreadcrumb($event)"></lib-breadcrumb>
+    </span>
+    <div class="content-component" cdkScrollable>
+      <div class="spinner-container translucent" *ngIf="bodyLoading">
+        <div class="spinner-new rotating"></div>
+      </div>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

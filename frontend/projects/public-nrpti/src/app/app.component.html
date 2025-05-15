@@ -1,0 +1,14 @@
+<app-header></app-header>
+
+<div class="app-body" cdkScrollable>
+  <div class="body-content" id="scrollTop">
+    <div class="spinner-container translucent" *ngIf="bodyLoading">
+      <div class="spinner-new rotating"></div>
+    </div>
+    <div>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>
