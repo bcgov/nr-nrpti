@@ -19,42 +19,57 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        package: [backend, frontend, migrations]
+        include:
+          - package: api
+            directory: backend
+            dockerfile: Dockerfile
+          - package: admin-nrpti
+            directory: frontend
+            dockerfile: Dockerfile
+          - package: public-nrpti
+            directory: frontend
+            dockerfile: Dockerfile-public-nrpti
     timeout-minutes: 10
     steps:
       - uses: bcgov/action-builder-ghcr@ace71f7a527ca6fc43c15c7806314be5a4579d2c # v2.3.0
         with:
           keep_versions: 50
           package: ${{ matrix.package }}
+          build_context: ${{ matrix.directory }}
+          build_file: ${{ matrix.directory }}/${{ matrix.dockerfile }}
           tag: ${{ github.event.number }}
           tag_fallback: latest
-          triggers: ('${{ matrix.package }}/')
+          triggers: ('${{ matrix.directory }}/')
 
-  # https://github.com/bcgov/quickstart-openshift-helpers
-  deploys:
-    name: Deploys (${{ github.event.number }})
+  deploy:
+    name: Deploy
     needs: [builds]
-    uses: ./.github/workflows/.deployer.yml
-    secrets:
-      oc_namespace: ${{ secrets.OC_NAMESPACE }}
-      oc_token: ${{ secrets.OC_TOKEN }}
-    with:
-      db_user: app-${{ github.event.number }}
-      params: --set global.secrets.persist=false
-      triggers: ('backend/' 'frontend/' 'migrations/' 'charts/')
-
-  tests:
-     name: Tests
-     if: needs.deploys.outputs.triggered == 'true'
-     needs: [deploys]
-     uses: ./.github/workflows/.tests.yml
-
-  results:
-    name: PR Results
-    needs: [builds, deploys, tests]
-    if: always()
     runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        include:
+          - component: api
+            file: ./tools/api/api.dc.yaml
+          - component: admin-nrpti
+            file: ./tools/angular-on-nginx/admin-nrced.dc.yaml
+          - component: public-nrpti
+            file: ./tools/angular-on-nginx/public-nrced.dc.yaml
     steps:
-      - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
-        run: echo "At least one job has failed." && exit 1
-      - run: echo "Success!"
+      - uses: actions/checkout@v3
+      - name: Deploy ${{ matrix.component }}
+        uses: bcgov/action-deployer-openshift@v4.0.0
+        with:
+          oc_namespace: ${{ vars.oc_namespace }}
+          oc_server: ${{ vars.oc_server }}
+          oc_token: ${{ secrets.oc_token }}
+          file: ${{ matrix.file }}
+          overwrite: true
+
+  # # https://github.com/bcgov/action-deploy-ghcr
+  # deploys:
+  #   name: Deploys (${{ github.event.number }})
+  #   needs: [builds]
+  #   secrets: inherit
+  #   uses: ./.github/workflows/deploy.yml
+  #   with:
+  #     triggers: ('api/' 'angular/')
