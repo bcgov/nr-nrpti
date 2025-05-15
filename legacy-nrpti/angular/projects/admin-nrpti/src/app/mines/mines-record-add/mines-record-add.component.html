@@ -1,0 +1,70 @@
+<form *ngIf="!loading" [formGroup]="myForm" novalidate>
+  <section class="my-3 py-3 border-bottom">
+    <div class="add-record-section">
+      <div class="flex-container">
+        <div class="label-pair">
+          <label for="recordName">
+            Record Name
+            <span class="red-asterisk">*</span>
+          </label>
+          <input name="recordName" id="recordName" type="text" formControlName="recordName" class="form-control" />
+        </div>
+        <div class="label-pair">
+          <label for="recordAgency">
+            Agency
+            <span class="red-asterisk">*</span>
+          </label>
+          <select name="recordAgency" id="recordAgency" formControlName="recordAgency" class="form-control">
+            <option *ngFor="let agency of recordAgencies" [ngValue]="agency">
+              {{ this.displayName(agency) }}
+            </option>
+          </select>
+        </div>
+        <div class="label-pair" *ngIf="myForm && myForm.controls.dateIssued">
+          <label for="dateIssued">Date</label>
+          <lib-date-picker
+            [control]="myForm.controls.dateIssued"
+            [isValidate]="true"
+            [minDate]="datepickerMinDate"
+          ></lib-date-picker>
+        </div>
+        <div class="label-pair">
+          <label for="recordType">
+            Type
+            <span class="red-asterisk">*</span>
+          </label>
+          <select name="recordType" id="recordType" formControlName="recordType" class="form-control">
+            <option *ngFor="let recordType of recordTypeNamesBCMI" [ngValue]="recordType">
+              {{ recordType }}
+            </option>
+          </select>
+        </div>
+        <div class="label-pair" *ngIf="myForm.get('recordType').value === 'Permit'">
+          <label for="typeCode">
+            Permit Type
+            <span class="red-asterisk">*</span>
+          </label>
+          <select name="typeCode" id="typeCode" formControlName="typeCode" class="form-control">
+            <option *ngFor="let typeCode of recordUtils.minePermitTypes" [ngValue]="typeCode">
+              {{ recordUtils.minePermitName(typeCode) }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <app-document-link-staging
+        *ngIf="!resetDocStaging"
+        [params]="{ maxFiles: 1, hideWhenMaxFilesReached: true }"
+        (linksChanged)="links = $event"
+        (documentsChanged)="documents = $event"
+      ></app-document-link-staging>
+      <div *ngIf="collectionId; else recordSave" class="d-flex justify-content-end mb-1">
+        <button class="btn btn-primary" type="submit" (click)="submit()" title="Save record">Add to Collection</button>
+      </div>
+      <ng-template #recordSave>
+        <div class="d-flex justify-content-end mb-1">
+          <button class="btn btn-primary" type="submit" (click)="submit()" title="Save record">Save Record</button>
+        </div>
+      </ng-template>
+    </div>
+  </section>
+</form>

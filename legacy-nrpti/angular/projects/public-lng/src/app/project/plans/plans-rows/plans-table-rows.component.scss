@@ -1,0 +1,7 @@
+@use "assets/styles/base/base.scss" as *;
+
+:host-context(tr) {
+  &:hover {
+    background-color: $table-row-hover-bg;
+  }
+}

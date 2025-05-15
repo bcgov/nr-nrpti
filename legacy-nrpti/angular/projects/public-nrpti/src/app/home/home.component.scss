@@ -1,0 +1,96 @@
+@use "assets/styles/base/base.scss" as *;
+
+:host {
+  @include flex(1 1 auto);
+
+  display: block;
+  color: #036;
+}
+
+a {
+  text-decoration: underline;
+}
+
+.headerText {
+  font-weight: bold;
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 18pt;
+}
+
+.watermark {
+  display: inline-block;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url('/assets/images/homepage.jpeg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 17rem;
+}
+
+.content-btn-dark {
+  padding: 0.35rem 1rem;
+  text-decoration: none;
+  color: #fff;
+  border-color: #036;
+  border: 2px solid #036;
+  background: #036;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+main {
+  padding: 3rem 0 3.75rem;
+  text-align: center;
+
+  p {
+    line-height: 1.75;
+    font-size: 1.2rem;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+}
+
+.feature-blocks {
+  > div {
+    padding: 8px;
+  }
+
+  .feature-block {
+    padding: 2rem 1.5rem;
+  }
+
+  margin-bottom: 2rem;
+}
+
+.btn.inverted {
+  text-transform: none;
+}
+
+.feature-block-header {
+  color: $feature-block-color;
+  background-color: $feature-block-bg;
+  text-align: center;
+  border: 1px solid $black;
+
+  h5 {
+    padding-top: 0.5rem;
+    background-color: $feature-block-bg;
+    font-size: 1.25rem;
+  }
+}
+
+.feature-block {
+  color: $feature-block-color;
+  border: 1px solid $black;
+  text-align: center;
+
+  p {
+    color: $black;
+    font-size: 0.875rem;
+  }
+
+  .btn {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+}
