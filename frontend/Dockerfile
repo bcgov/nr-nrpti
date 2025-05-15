@@ -1,23 +1,32 @@
-# Build
-FROM node:22-slim@sha256:557e52a0fcb928ee113df7e1fb5d4f60c1341dbda53f55e3d815ca10807efdce AS build
+# This Dockerfile works, however it uses the 'ng serve' command, which isn't supposed to be used in production
 
-# Copy, build static files; see .dockerignore for exclusions
-WORKDIR /app
-COPY . ./
-RUN npm run deploy
+# Base image for the container
+FROM node:18.19-alpine
 
-# Deploy using Caddy to host static files
-FROM caddy:2.10.0-alpine@sha256:e2e3a089760c453bc51c4e718342bd7032d6714f15b437db7121bfc2de2654a6
-RUN apk add --no-cache ca-certificates
+# Set the working directory
+WORKDIR /app/
 
-# Copy static files, verify Caddyfile formatting
-COPY --from=build /app/dist /srv
-COPY Caddyfile /etc/caddy/Caddyfile
-RUN caddy fmt /etc/caddy/Caddyfile
+# Copy package.json and package-lock.json first to leverage Docker cache
+COPY package*.json ./
 
-# Boilerplate, not used in OpenShift/Kubernetes
-EXPOSE 3000 3001
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3001/health
+# Install dependencies
+RUN npm install
 
-# Nonroot user
-USER 1001
+# Copy the rest of the application code
+COPY . /app
+
+# Build for production - clean, build library, and build admin-nrpti
+RUN npm run build:prod:only-nrpti
+
+# Install a simple server to serve static files
+RUN npm install -g serve
+
+# Make entrypoint script executable
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Expose port 4200
+EXPOSE 4200
+
+# Use the entrypoint script
+CMD ["/app/entrypoint.sh"]
