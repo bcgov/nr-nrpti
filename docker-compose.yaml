@@ -26,7 +26,7 @@ services:
   api:
     container_name: nrpti-api
     build:
-      context: ./api
+      context: ./backend
       dockerfile: Dockerfile
     networks:
       - nrpti
@@ -57,7 +57,7 @@ services:
   admin-nrpti:
     container_name: admin-nrpti
     build:
-      context: ./angular
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
       - 4200:4200
@@ -81,7 +81,7 @@ services:
   public-nrpti:
     container_name: public-nrpti
     build:
-      context: ./angular
+      context: ./frontend
       dockerfile: Dockerfile-public-nrpti
     ports:
       - 4400:4400
