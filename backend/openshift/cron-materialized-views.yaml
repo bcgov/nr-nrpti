@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: cronjob-template
+  annotations:
+    description: 'Template for job that curls your api'
+    tags: 'cronjob'
+parameters:
+  - name: CRON_SCHEDULE
+    description: 'Cron-like schedule expression. Default: Once every 30th minute, eg. 10:00AM PST & 10:30AM PST '
+    value: '*/30 * * * *'
+  - name: CRON_NAME
+    decription: 'Name of the cronjob container.'
+    value: 'nrpti-materializedviewsubset'
+objects:
+  - apiVersion: batch/v1beta1
+    kind: CronJob
+    metadata:
+      name: ${CRON_NAME}
+    spec:
+      schedule: ${CRON_SCHEDULE}
+      concurrencyPolicy: Forbid
+      jobTemplate:
+        spec:
+          template:
+            metadata:
+              labels:
+                role: cronjob
+                app: nrpti
+            spec:
+              containers:
+                - name: ${CRON_NAME}
+                  image: image-registry.openshift-image-registry.svc:5000/f00029-tools/base-centos7:latest
+                  command:
+                    - bash
+                    - -c
+                    - |-
+                      echo -e "-------- STARTING CRON --------\n" echo -e "-------- GETTING ACCESS TOKEN --------\n"
+                      TOKEN=$(curl -X POST "${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" \
+                        -H "Content-Type: application/x-www-form-urlencoded" \
+                        -d "username=${KEYCLOAK_USERNAME}" \
+                        -d "password=${KEYCLOAK_PASSWORD}" \
+                        -d "grant_type=password" \
+                        -d "client_id=${KEYCLOAK_CLIENT_ID}" \
+                        -d "client_secret=${KEYCLOAK_CLIENT_SECRET}" | python -c "import sys, json; print json.load(sys.stdin)['access_token']")
+
+                      echo -e "-------- UPDATING SUBSETS --------\n"
+                      echo -e "Updating issuedTo subset\n"
+                      curl -H "Authorization: Bearer ${TOKEN}" \
+                        -H "Content-Type: application/json" \
+                        -d '{"taskType":"updateMaterializedView", "materializedViewSubset":"issuedTo"}' \
+                        ${NRPTI_API_URL}/task
+
+                      echo -e "Updating location subset\n"
+                      curl -H "Authorization: Bearer ${TOKEN}" \
+                        -H "Content-Type: application/json" \
+                        -d '{"taskType":"updateMaterializedView", "materializedViewSubset":"location"}' \
+                        ${NRPTI_API_URL}/task
+
+                      echo -e "Updating recordName subset\n"
+                      curl -H "Authorization: Bearer ${TOKEN}" \
+                        -H "Content-Type: application/json" \
+                        -d '{"taskType":"updateMaterializedView", "materializedViewSubset":"recordNameSubset"}' \
+                        ${NRPTI_API_URL}/task
+
+                      echo -e "Updating descriptionSummary subset\n"
+                      curl -H "Authorization: Bearer ${TOKEN}" \
+                        -H "Content-Type: application/json" \
+                        -d '{"taskType":"updateMaterializedView", "materializedViewSubset":"descriptionSummary"}' \
+                        ${NRPTI_API_URL}/task
+
+                      echo -e "Updating outcomeDescription subset\n"
+                      curl -H "Authorization: Bearer ${TOKEN}" \
+                        -H "Content-Type: application/json" \
+                        -d '{"taskType":"updateMaterializedView", "materializedViewSubset":"outcomeDescriptionSubset"}' \
+                        ${NRPTI_API_URL}/task
+
+                        echo -e "-------- CRON COMPLETE --------\n"
+                  env:
+                    - name: KEYCLOAK_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          key: KEYCLOAK_PASSWORD
+                          name: nrpti-cron-secrets
+                    - name: KEYCLOAK_CLIENT_ID
+                      valueFrom:
+                        secretKeyRef:
+                          key: KEYCLOAK_CLIENT_ID
+                          name: nrpti-cron-secrets
+                    - name: KEYCLOAK_CLIENT_SECRET
+                      valueFrom:
+                        secretKeyRef:
+                          key: KEYCLOAK_CLIENT_SECRET
+                          name: nrpti-cron-secrets
+                    - name: KEYCLOAK_USERNAME
+                      valueFrom:
+                        secretKeyRef:
+                          key: KEYCLOAK_USERNAME
+                          name: nrpti-cron-secrets
+                    - name: KEYCLOAK_URL
+                      valueFrom:
+                        secretKeyRef:
+                          key: KEYCLOAK_URL
+                          name: nrpti-cron-secrets
+                    - name: KEYCLOAK_REALM
+                      valueFrom:
+                        secretKeyRef:
+                          key: KEYCLOAK_REALM
+                          name: nrpti-cron-secrets
+                    - name: NRPTI_API_URL
+                      valueFrom:
+                        secretKeyRef:
+                          key: NRPTI_API_URL
+                          name: nrpti-cron-secrets
+              restartPolicy: Never
