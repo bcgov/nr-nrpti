@@ -1,0 +1,98 @@
+<form [formGroup]="formGroup">
+  <div [ngClass]="renderColumns ? 'flex-container__col' : 'flex-container__row'">
+    <div [ngClass]="renderColumns ? 'label-pair__col' : 'label-pair__row'">
+      <label for="act">Act</label>
+      <input
+        name="act"
+        id="act"
+        formControlName="act"
+        type="text"
+        class="form-control"
+        placeholder="Begin typing to filter acts..."
+        matInput
+        (keyup)="debouncedFilterActsPicklist($event)"
+        (blur)="verifyKnownActValue($event)"
+        [matAutocomplete]="actAutocomplete"
+      />
+      <mat-autocomplete #actAutocomplete="matAutocomplete">
+        <mat-option (click)="onEmptyAct()">Clear Selected</mat-option>
+        <mat-option *ngFor="let act of filteredActs" [value]="act" (click)="onSelectAct(act)" title="{{ act }}">
+          {{ act }}
+        </mat-option>
+      </mat-autocomplete>
+    </div>
+    <div [ngClass]="renderColumns ? 'label-pair__col' : 'label-pair__row'">
+      <label for="regulation">Regulation</label>
+      <input
+        name="regulation"
+        id="regulation"
+        formControlName="regulation"
+        type="text"
+        class="form-control"
+        placeholder="Begin typing to filter regulations..."
+        matInput
+        (keyup)="debouncedFilterRegulationsPicklist($event)"
+        (blur)="verifyKnownRegulationValue($event)"
+        [matAutocomplete]="regulationAutocomplete"
+      />
+      <mat-autocomplete #regulationAutocomplete="matAutocomplete">
+        <mat-option (click)="onEmptyRegulation()">Clear Selected</mat-option>
+        <mat-option
+          *ngFor="let regulation of filteredRegulations"
+          [value]="regulation"
+          (click)="onSelectRegulation(regulation)"
+          title="{{ regulation }}"
+        >
+          {{ regulation }}
+        </mat-option>
+      </mat-autocomplete>
+    </div>
+    <div *ngIf="!hideSection" [ngClass]="renderColumns ? 'label-pair__col' : 'label-pair__row xsm'">
+      <label for="section">Section</label>
+      <input name="section" id="section" formControlName="section" type="text" class="form-control" />
+    </div>
+    <div *ngIf="!hideSubSection" [ngClass]="renderColumns ? 'label-pair__col' : 'label-pair__row xsm'">
+      <label for="subSection">Sub-Section</label>
+      <input name="subSection" id="subSection" formControlName="subSection" type="text" class="form-control" />
+    </div>
+    <div *ngIf="!hideParagraph" [ngClass]="renderColumns ? 'label-pair__col' : 'label-pair__row xsm'">
+      <label for="paragraph">Paragraph</label>
+      <input name="paragraph" id="paragraph" formControlName="paragraph" type="text" class="form-control" />
+    </div>
+    <div class="flex-container">
+      <div *ngIf="hasOffence" class="label-pair">
+        <label for="offence">Offence</label>
+        <input readonly name="offence" id="offence" formControlName="offence" class="form-control" />
+        <span *ngIf="this.formGroup.controls.act.value && !this.formGroup.controls.offence.value" class="grey-subtext">
+          No description available for the selected combination of act, regulation, section, subsection and paragraph.
+          Please double-check that you have filled out those fields correctly; if they are correct, please contact the
+          system administrator at
+          <a href="mailto:nrced@gov.bc.ca">nrced&#64;gov.bc.ca</a>
+          to request a new description be added to the system.
+        </span>
+      </div>
+      <!-- If a legislation doesn't have an offence, we can assume it has a legislationDescription -->
+      <div *ngIf="!hasOffence" class="label-pair">
+        <label for="legislationDescription">Description</label>
+        <input
+          readonly
+          name="legislationDescription"
+          id="legislationDescription"
+          type="text"
+          formControlName="legislationDescription"
+          class="form-control"
+        />
+        <span
+          *ngIf="this.formGroup.controls.act.value && !this.formGroup.controls.legislationDescription.value"
+          class="grey-subtext"
+        >
+          No description available for the selected combination of act, regulation, section, subsection and paragraph.
+          Please double-check that you have filled out those fields correctly; if they are correct, please contact the
+          system administrator at
+          <a href="mailto:nrced@gov.bc.ca">nrced&#64;gov.bc.ca</a>
+          to request a new description be added to the system.
+        </span>
+      </div>
+    </div>
+  </div>
+</form>

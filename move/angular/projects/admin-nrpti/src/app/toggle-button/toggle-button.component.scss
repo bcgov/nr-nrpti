@@ -1,0 +1,52 @@
+@use "assets/styles/base/base.scss" as *;
+
+button {
+  background: $aside-toggle-button-color;
+  border-radius: 0 6px 6px 0;
+  height: 48px;
+  width: 35px;
+  padding: 0;
+}
+
+.side-arrow {
+  &::after,
+  &::before {
+    content: '';
+    border-left: 3px solid $white;
+    height: 13px;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  &.right {
+    &::before {
+      -webkit-transform: rotate(-45deg);
+      transition: all 0.3s;
+      top: 14px;
+      left: 15px;
+    }
+
+    &::after {
+      -webkit-transform: rotate(45deg);
+      transition: all 0.3s;
+      top: 22px;
+      left: 15px;
+    }
+  }
+
+  &.left {
+    &::before {
+      -webkit-transform: rotate(45deg);
+      transition: all 0.3s;
+      top: 14px;
+      left: 15px;
+    }
+
+    &::after {
+      -webkit-transform: rotate(-45deg);
+      transition: all 0.3s;
+      top: 22px;
+      left: 15px;
+    }
+  }
+}

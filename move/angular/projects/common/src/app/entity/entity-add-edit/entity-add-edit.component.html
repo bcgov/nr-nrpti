@@ -1,0 +1,59 @@
+<form [formGroup]="formGroup">
+  <!-- Add/Edit* -->
+  <div class="flex-container">
+    <div class="label-pair">
+      <label for="type">{{ entityTypeLabel }}</label>
+      <select name="type" id="type" formControlName="type" class="form-control" (change)="updateUI()">
+        <option *ngFor="let entityType of entityTypes" [ngValue]="entityType">
+          {{ entityType }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="flex-container">
+    <!-- Company -->
+    <ng-container *ngIf="UIType === ENTITY_TYPE.Company">
+      <div class="label-pair">
+        <label for="companyName">Company Name</label>
+        <input name="companyName" id="companyName" formControlName="companyName" type="text" class="form-control" />
+      </div>
+    </ng-container>
+
+    <!-- Individual* -->
+    <ng-container *ngIf="UIType === ENTITY_TYPE.Individual || UIType === ENTITY_TYPE.IndividualCombined">
+      <!-- IndividualCombined -->
+      <ng-container *ngIf="UIType === ENTITY_TYPE.Individual">
+        <div class="label-pair">
+          <label for="firstName">First Name</label>
+          <input name="firstName" id="firstName" formControlName="firstName" type="text" class="form-control" />
+        </div>
+        <div class="label-pair">
+          <label for="middleName">Middle Name</label>
+          <input name="middleName" id="middleName" formControlName="middleName" type="text" class="form-control" />
+        </div>
+        <div class="label-pair">
+          <label for="lastName">Last Name</label>
+          <input name="lastName" id="lastName" formControlName="lastName" type="text" class="form-control" />
+        </div>
+      </ng-container>
+
+      <!-- Individual -->
+      <ng-container *ngIf="UIType === ENTITY_TYPE.IndividualCombined">
+        <div class="label-pair">
+          <label for="fullName">Full Name</label>
+          <input name="fullName" id="fullName" formControlName="fullName" type="text" class="form-control" />
+        </div>
+      </ng-container>
+      <div class="label-pair" *ngIf="formGroup && formGroup.controls.dateOfBirth">
+        <label for="dateOfBirth">Date of Birth</label>
+        <lib-date-picker
+          [control]="formGroup.controls.dateOfBirth"
+          [isValidate]="true"
+          [minDate]="datepickerMinDate"
+          [maxDate]="datepickerMaxDate"
+        ></lib-date-picker>
+      </div>
+    </ng-container>
+  </div>
+</form>
