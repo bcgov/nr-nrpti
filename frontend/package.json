@@ -18,7 +18,7 @@
     "build:app:admin-nrpti": "ng build admin-nrpti --configuration production",
     "build:app:public-nrced": "ng build public-nrced --configuration production",
     "build:app:public-lng": "ng build public-lng --configuration production",
-    "build:library": "ng build global",
+    "build:library": "ng build global --verbose",
     "build:library:dev": "npm-run-all -l -s -c library:unlink clean:library build:library library:link",
     "library:link": "npm-run-all -l -s -c library:link:*",
     "library:link:1": "cd dist/nrpti-angular-components && npm link",
