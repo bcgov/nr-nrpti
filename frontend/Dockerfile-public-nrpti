@@ -15,7 +15,6 @@ COPY . /app
 
 # Build the library
 RUN npm run build:library && \
-    ls -la dist/nrpti-angular-components && \
     cd dist/nrpti-angular-components && \
     npm link && \
     cd /app && \
