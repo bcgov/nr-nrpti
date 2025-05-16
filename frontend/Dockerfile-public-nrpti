@@ -8,13 +8,16 @@ WORKDIR /app/
 COPY package*.json ./
 
 # Install dependencies with maximum verbosity
-RUN npm install --verbose
+RUN npm install
 
 # Copy the rest of the application code
 COPY . /app
 
-# List the service files to verify they exist
-RUN ls -la /app/projects/global/src/lib/services/
+# Make sure the services directory structure exists
+RUN mkdir -p /app/projects/global/src/lib/services
+
+# List the contents of the source directory to debug
+RUN ls -la /app/projects/global/src/lib/
 
 # Build the library with verbose logging and ensure it completes
 RUN npm run build:library && \
