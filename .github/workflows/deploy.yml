@@ -21,7 +21,7 @@ on:
         type: string
       triggers:
         description: List of directories to trigger the deployment
-        default: ''
+        default: 'frontend backend'
         type: string
 permissions: {}
 
