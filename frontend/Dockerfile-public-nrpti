@@ -7,19 +7,13 @@ WORKDIR /app/
 # Copy package.json and package-lock.json first to leverage Docker cache
 COPY package*.json ./
 
-# Install dependencies with maximum verbosity
+# Install dependencies
 RUN npm install
 
 # Copy the rest of the application code
 COPY . /app
 
-# Make sure the services directory structure exists
-RUN mkdir -p /app/projects/global/src/lib/services
-
-# List the contents of the source directory to debug
-RUN ls -la /app/projects/global/src/lib/
-
-# Build the library with verbose logging and ensure it completes
+# Build the library
 RUN npm run build:library && \
     ls -la dist/nrpti-angular-components && \
     cd dist/nrpti-angular-components && \
