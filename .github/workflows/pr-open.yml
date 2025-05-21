@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
+        packace: [api, public-nrpti]
         include:
           - package: api
             directory: backend
@@ -47,12 +48,13 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
+        package: [api, public-nrpti]
         include:
-          - component: api
+          - package: api
             file: ./tools/api/api.dc.yaml
           # - component: admin-nrpti
           #   file: ./tools/angular-on-nginx/admin-nrced.dc.yaml
-          - component: public-nrpti
+          - package: public-nrpti
             file: ./tools/angular-on-nginx/public-nrced.dc.yaml
     steps:
       - uses: actions/checkout@v3
