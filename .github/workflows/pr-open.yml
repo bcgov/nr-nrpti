@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        package: [api, public-nrpti]
+        package: [api, public-nrpti, mongo]
         include:
           - package: api
             file: ./tools/api/api.dc.yaml
@@ -56,9 +56,11 @@ jobs:
           #   file: ./tools/angular-on-nginx/admin-nrced.dc.yaml
           - package: public-nrpti
             file: ./tools/angular-on-nginx/public-nrced.dc.yaml
+          - package: mongo
+            file: ./common/openshift.database.yml
     steps:
       - uses: actions/checkout@v3
-      - name: Deploy ${{ matrix.component }}
+      - name: Deploy ${{ matrix.package }}
         uses: bcgov/action-deployer-openshift@v4.0.0
         with:
           oc_namespace: ${{ vars.oc_namespace }}
