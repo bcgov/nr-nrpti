@@ -156,18 +156,18 @@ parameters:
   - name: DATABASE_USER
     displayName: MongoDB Username
     description: Username for MongoDB user that will be used for accessing the database.
-    parameters: -p SECRET=${{ secret.MONGODB_USER }}
+    parameters: -p SECRET=${{ secrets.MONGODB_USER }}
   - name: DATABASE_PASSWORD
     displayName: MongoDB Password
     description: Password for the MongoDB user.
-    parameters: -p SECRET=${{ secret.MONGODB_PASSWORD }}
+    parameters: -p SECRET=${{ secrets.MONGODB_PASSWORD }}
   - name: DATABASE_NAME
     displayName: Database Name
-    parameters: -p SECRET=${{ secret.MONGODB_DATABASE_NAME }}
+    parameters: -p SECRET=${{ secrets.MONGODB_DATABASE_NAME }}
   - name: DATABASE_ADMIN_PASSWORD
     displayName: Database Administrator Password
     description: Password for the database admin user.
-    parameters: -p SECRET=${{ secret.MONGODB_ADMIN_PASSWORD }}
+    parameters: -p SECRET=${{ secrets.MONGODB_ADMIN_PASSWORD }}
   - name: DATABASE_VOLUME_CAPACITY
     displayName: Database Volume Capacity
     description: Volume space available for mongo database, e.g. 512Mi, 2Gi.
