@@ -291,10 +291,7 @@ parameters:
     description: The name assigned to a group of objects deployed together
     required: true
     value: nrpti
-  - name: MONGO_IMAGE_NAMESPACE
-    displayName: mongo image namespace
-    description: The OpenShift Namespace where the mongo ImageStream resides.
-    value: openshift
+
   - name: MONGO_VER
     displayName: Mongo Version Number
     description:

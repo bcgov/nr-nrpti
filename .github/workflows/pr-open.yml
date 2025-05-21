@@ -1,5 +1,4 @@
 name: PR
-
 on:
   pull_request:
 
@@ -11,7 +10,6 @@ concurrency:
 permissions: {}
 
 jobs:
-  # https://github.com/bcgov/action-builder-ghcr
   builds:
     name: Builds
     permissions:
@@ -19,13 +17,14 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
+        package: [api, public-nrpti]
         include:
           - package: api
             directory: backend
             dockerfile: Dockerfile
-          - package: admin-nrpti
-            directory: frontend
-            dockerfile: Dockerfile
+          # - package: admin-nrpti
+          #   directory: frontend
+          #   dockerfile: Dockerfile
           - package: public-nrpti
             directory: frontend
             dockerfile: Dockerfile-public-nrpti
@@ -39,24 +38,43 @@ jobs:
           build_file: ${{ matrix.directory }}/${{ matrix.dockerfile }}
           tag: ${{ github.event.number }}
           tag_fallback: latest
-          triggers: ('${{ matrix.directory }}/')
+          # triggers: ('${{ matrix.directory }}/')
+
+  init:
+    name: Init
+    # needs: [builds]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Deploy Init
+        uses: bcgov/action-deployer-openshift@v4.0.0
+        with:
+          oc_namespace: ${{ vars.oc_namespace }}
+          oc_server: ${{ vars.oc_server }}
+          oc_token: ${{ secrets.oc_token }}
+          file: ./common/openshift.database.yml
+          overwrite: true
+          parameters:
+            -p MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }}
+            -p MONGODB_DATABASE_NAME=${{ secrets.MONGODB_DATABASE_NAME }}
+            -p MONGODB_USER=${{ secrets.MONGODB_USER }}
+            -p MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}
 
   deploy:
     name: Deploy
-    needs: [builds]
+    needs: [init]
     runs-on: ubuntu-24.04
     strategy:
       matrix:
+        package: [api, public-nrpti]
         include:
-          - component: api
+          - package: api
             file: ./tools/api/api.dc.yaml
-          - component: admin-nrpti
-            file: ./tools/angular-on-nginx/admin-nrced.dc.yaml
-          - component: public-nrpti
+          # - component: admin-nrpti
+          #   file: ./tools/angular-on-nginx/admin-nrced.dc.yaml
+          - package: public-nrpti
             file: ./tools/angular-on-nginx/public-nrced.dc.yaml
     steps:
-      - uses: actions/checkout@v3
-      - name: Deploy ${{ matrix.component }}
+      - name: Deploy ${{ matrix.package }}
         uses: bcgov/action-deployer-openshift@v4.0.0
         with:
           oc_namespace: ${{ vars.oc_namespace }}
