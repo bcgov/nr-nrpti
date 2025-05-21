@@ -41,7 +41,9 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           file: common/openshift.init.yml
           overwrite: true
-          parameters:
+          parameters: |
+            -p TAG=${{ inputs.tag }}
+            -p TARGET=${{ inputs.target }}
           triggers: ${{ inputs.triggers }}
 
   deploy:
