@@ -23,9 +23,9 @@ jobs:
           - package: api
             directory: backend
             dockerfile: Dockerfile
-          - package: admin-nrpti
-            directory: frontend
-            dockerfile: Dockerfile
+          # - package: admin-nrpti
+          #   directory: frontend
+          #   dockerfile: Dockerfile
           - package: public-nrpti
             directory: frontend
             dockerfile: Dockerfile-public-nrpti
@@ -39,8 +39,8 @@ jobs:
           build_file: ${{ matrix.directory }}/${{ matrix.dockerfile }}
           tag: ${{ github.event.number }}
           tag_fallback: latest
-          triggers: ('${{ matrix.directory }}/')
-
+          # triggers: ('${{ matrix.directory }}/')
+          #
   deploy:
     name: Deploy
     needs: [builds]
@@ -50,8 +50,8 @@ jobs:
         include:
           - component: api
             file: ./tools/api/api.dc.yaml
-          - component: admin-nrpti
-            file: ./tools/angular-on-nginx/admin-nrced.dc.yaml
+          # - component: admin-nrpti
+          #   file: ./tools/angular-on-nginx/admin-nrced.dc.yaml
           - component: public-nrpti
             file: ./tools/angular-on-nginx/public-nrced.dc.yaml
     steps:
