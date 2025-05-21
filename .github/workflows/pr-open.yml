@@ -54,7 +54,7 @@ jobs:
           oc_token: ${{ secrets.oc_token }}
           file: ./common/openshift.database.yml
           overwrite: true
-          parameters: |
+          parameters:
             -p MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }}
             -p MONGODB_DATABASE_NAME=${{ secrets.MONGODB_DATABASE_NAME }}
             -p MONGODB_USER=${{ secrets.MONGODB_USER }}
