@@ -10,35 +10,35 @@ concurrency:
 permissions: {}
 
 jobs:
-  # builds:
-  #   name: Builds
-  #   permissions:
-  #     packages: write
-  #   runs-on: ubuntu-24.04
-  #   strategy:
-  #     matrix:
-  #       package: [api, public-nrpti]
-  #       include:
-  #         - package: api
-  #           directory: backend
-  #           dockerfile: Dockerfile
-  #         # - package: admin-nrpti
-  #         #   directory: frontend
-  #         #   dockerfile: Dockerfile
-  #         - package: public-nrpti
-  #           directory: frontend
-  #           dockerfile: Dockerfile-public-nrpti
-  #   timeout-minutes: 10
-  #   steps:
-  #     - uses: bcgov/action-builder-ghcr@ace71f7a527ca6fc43c15c7806314be5a4579d2c # v2.3.0
-  #       with:
-  #         keep_versions: 50
-  #         package: ${{ matrix.package }}
-  #         build_context: ${{ matrix.directory }}
-  #         build_file: ${{ matrix.directory }}/${{ matrix.dockerfile }}
-  #         tag: ${{ github.event.number }}
-  #         tag_fallback: latest
-  #         # triggers: ('${{ matrix.directory }}/')
+  builds:
+    name: Builds
+    permissions:
+      packages: write
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        package: [api, public-nrpti]
+        include:
+          - package: api
+            directory: backend
+            dockerfile: Dockerfile
+          # - package: admin-nrpti
+          #   directory: frontend
+          #   dockerfile: Dockerfile
+          - package: public-nrpti
+            directory: frontend
+            dockerfile: Dockerfile-public-nrpti
+    timeout-minutes: 10
+    steps:
+      - uses: bcgov/action-builder-ghcr@ace71f7a527ca6fc43c15c7806314be5a4579d2c # v2.3.0
+        with:
+          keep_versions: 50
+          package: ${{ matrix.package }}
+          build_context: ${{ matrix.directory }}
+          build_file: ${{ matrix.directory }}/${{ matrix.dockerfile }}
+          tag: ${{ github.event.number }}
+          tag_fallback: latest
+          # triggers: ('${{ matrix.directory }}/')
 
   init:
     name: Init
