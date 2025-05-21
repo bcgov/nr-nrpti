@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        packace: [api, public-nrpti]
+        package: [api, public-nrpti]
         include:
           - package: api
             directory: backend
