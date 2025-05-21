@@ -57,32 +57,28 @@ parameters:
     displayName: MongoDB Admin Password
     description: Password for the MongoDB admin user.
     required: true
-    value: ${{ secrets.MONGODB_ADMIN_PASSWORD }}
   - name: MONGODB_DATABASE_NAME
     displayName: MongoDB Database Name
     description: Name of the MongoDB database.
     required: true
-    value: ${{ secrets.MONGODB_DATABASE_NAME }}
   - name: MONGODB_USER
     displayName: MongoDB User
     description: Username for the MongoDB user that will be used for accessing the database.
     required: true
-    value: ${{ secrets.MONGODB_USER }}
   - name: MONGODB_PASSWORD
     displayName: MongoDB Password
     description: Password for the MongoDB user.
     required: true
-    value: ${{ secrets.MONGODB_PASSWORD }}
 objects:
   - kind: Secret
     apiVersion: v1
     metadata:
       name: ${NAME}-mongodb
     stringData:
-      MONGODB_ADMIN_PASSWORD: ${{ secrets.MONGODB_ADMIN_PASSWORD }}
-      MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE_NAME }}
-      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
-      MONGODB_USERNAME: ${{ secrets.MONGODB_USER }}
+      MONGODB_ADMIN_PASSWORD: ${MONGODB_ADMIN_PASSWORD}
+      MONGODB_DATABASE: ${MONGODB_DATABASE_NAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_USERNAME: ${MONGODB_USER}
     type: Opaque
   - kind: PersistentVolumeClaim
     apiVersion: v1
