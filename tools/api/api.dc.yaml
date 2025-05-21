@@ -227,7 +227,7 @@ objects:
         spec:
           containers:
             - name: ${NAME}-mongodb
-              image: image-registry.openshift-image-registry.svc:5000/${APP_IMAGE_NAMESPACE}/mongodb:${MONGO_VER}
+              image: mongo:3.6
               ports:
                 - containerPort: 27017
               env:
