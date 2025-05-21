@@ -5,6 +5,74 @@ metadata:
   labels:
     template: ${NAME}-mongodb
     app: ${GROUP_NAME}
+parameters:
+  - name: NAME
+    displayName: Name
+    description: The name assigned to all of the frontend objects defined in this template.
+    value: nrpti
+  - name: GROUP_NAME
+    displayName: Group Name
+    description: The name assigned to a group of objects deployed together
+    value: nrpti
+  - name: MONGO_VER
+    displayName: Mongo Version Number
+    description:
+      The version number of Mongo that matches the version in project file
+      package.json
+    value: '3.6'
+  - name: DATABASE_CPU_LIMITS
+    value: '1'
+  - name: DATABASE_MEMORY_LIMITS
+    value: 2Gi
+  - name: DATABASE_CPU_REQUESTS
+    value: 150m
+  - name: DATABASE_MEMORY_REQUESTS
+    value: 1Gi
+  - name: DATABASE_USER
+    displayName: MongoDB Username
+    description: Username for MongoDB user that will be used for accessing the database.
+    parameters: -p SECRET=${{ secrets.MONGODB_USER }}
+  - name: DATABASE_PASSWORD
+    displayName: MongoDB Password
+    description: Password for the MongoDB user.
+    parameters: -p SECRET=${{ secrets.MONGODB_PASSWORD }}
+  - name: DATABASE_NAME
+    displayName: Database Name
+    parameters: -p SECRET=${{ secrets.MONGODB_DATABASE_NAME }}
+  - name: DATABASE_ADMIN_PASSWORD
+    displayName: Database Administrator Password
+    description: Password for the database admin user.
+    parameters: -p SECRET=${{ secrets.MONGODB_ADMIN_PASSWORD }}
+  - name: DATABASE_VOLUME_CAPACITY
+    displayName: Database Volume Capacity
+    description: Volume space available for mongo database, e.g. 512Mi, 2Gi.
+    value: 10Gi
+    required: true
+  - name: APP_IMAGE_NAMESPACE
+    displayName: Namespace containing application images.
+    description: Namespace containing application images.
+    value: f00029-tools
+    required: true
+  - name: MONGODB_ADMIN_PASSWORD
+    displayName: MongoDB Admin Password
+    description: Password for the MongoDB admin user.
+    required: true
+    value: ${{ secrets.MONGODB_ADMIN_PASSWORD }}
+  - name: MONGODB_DATABASE_NAME
+    displayName: MongoDB Database Name
+    description: Name of the MongoDB database.
+    required: true
+    value: ${{ secrets.MONGODB_DATABASE_NAME }}
+  - name: MONGODB_USER
+    displayName: MongoDB User
+    description: Username for the MongoDB user that will be used for accessing the database.
+    required: true
+    value: ${{ secrets.MONGODB_USER }}
+  - name: MONGODB_PASSWORD
+    displayName: MongoDB Password
+    description: Password for the MongoDB user.
+    required: true
+    value: ${{ secrets.MONGODB_PASSWORD }}
 objects:
   - kind: Secret
     apiVersion: v1
@@ -128,53 +196,3 @@ objects:
             - name: ${NAME}-mongodb-data
               persistentVolumeClaim:
                 claimName: ${NAME}-mongodb-data
-parameters:
-  - name: NAME
-    displayName: Name
-    description: The name assigned to all of the frontend objects defined in this template.
-    required: true
-    value: nrpti
-  - name: GROUP_NAME
-    displayName: Group Name
-    description: The name assigned to a group of objects deployed together
-    required: true
-    value: nrpti
-  - name: MONGO_VER
-    displayName: Mongo Version Number
-    description:
-      The version number of Mongo that matches the version in project file
-      package.json
-    value: '3.6'
-  - name: DATABASE_CPU_LIMITS
-    value: '1'
-  - name: DATABASE_MEMORY_LIMITS
-    value: 2Gi
-  - name: DATABASE_CPU_REQUESTS
-    value: 150m
-  - name: DATABASE_MEMORY_REQUESTS
-    value: 1Gi
-  - name: DATABASE_USER
-    displayName: MongoDB Username
-    description: Username for MongoDB user that will be used for accessing the database.
-    parameters: -p SECRET=${{ secrets.MONGODB_USER }}
-  - name: DATABASE_PASSWORD
-    displayName: MongoDB Password
-    description: Password for the MongoDB user.
-    parameters: -p SECRET=${{ secrets.MONGODB_PASSWORD }}
-  - name: DATABASE_NAME
-    displayName: Database Name
-    parameters: -p SECRET=${{ secrets.MONGODB_DATABASE_NAME }}
-  - name: DATABASE_ADMIN_PASSWORD
-    displayName: Database Administrator Password
-    description: Password for the database admin user.
-    parameters: -p SECRET=${{ secrets.MONGODB_ADMIN_PASSWORD }}
-  - name: DATABASE_VOLUME_CAPACITY
-    displayName: Database Volume Capacity
-    description: Volume space available for mongo database, e.g. 512Mi, 2Gi.
-    value: 10Gi
-    required: true
-  - name: APP_IMAGE_NAMESPACE
-    displayName: Namespace containing application images.
-    description: Namespace containing application images.
-    value: f00029-tools
-    required: true
