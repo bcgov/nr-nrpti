@@ -1,5 +1,4 @@
 name: PR
-
 on:
   pull_request:
 
@@ -63,11 +62,11 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: [builds]
+    needs: [init]
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        package: [api, public-nrpti
+        package: [api, public-nrpti]
         include:
           - package: api
             file: ./tools/api/api.dc.yaml
