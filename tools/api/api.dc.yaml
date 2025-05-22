@@ -1,35 +1,37 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: ${NAME}-api
+  name: ${NAME}-${ZONE}-${COMPONENT}
   labels:
-    template: ${NAME}-api
-    app: ${GROUP_NAME}
+    template: ${NAME}-${ZONE}-${COMPONENT}
+    app: ${NAME}-${ZONE}
 objects:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: ${NAME}-api
+      name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
-        app: ${GROUP_NAME}
+        app: ${NAME}-${ZONE}
+        component: ${COMPONENT}
     spec:
       ports:
         - name: web
           port: 3000
           targetPort: 3000
       selector:
-        name: ${NAME}-api
+        name: ${NAME}-${ZONE}-${COMPONENT}
   - kind: Route
     apiVersion: v1
     metadata:
-      name: ${NAME}-api
+      name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
-        app: ${GROUP_NAME}
+        app: ${NAME}-${ZONE}
+        component: ${COMPONENT}
     spec:
-      host: ${NAME}-api-${APPLICATION_DOMAIN}
+      host: ${NAME}-${ZONE}-${COMPONENT}-${APPLICATION_DOMAIN}
       to:
         kind: Service
-        name: ${NAME}-api
+        name: ${NAME}-${ZONE}-${COMPONENT}
       path: ${APPLICATION_DOMAIN_PATH}
       port:
         targetPort: web
@@ -39,9 +41,10 @@ objects:
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
-      name: ${NAME}-api
+      name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
-        app: ${GROUP_NAME}
+        app: ${NAME}-${ZONE}
+        component: ${COMPONENT}
         role: api
     spec:
       strategy:
@@ -51,7 +54,7 @@ objects:
           imageChangeParams:
             automatic: true
             containerNames:
-              - ${NAME}-api
+              - ${NAME}-${ZONE}-${COMPONENT}
             from:
               kind: ImageStreamTag
               namespace: ${APP_IMAGE_NAMESPACE}
@@ -59,17 +62,18 @@ objects:
       replicas: 1
       selector:
         matchLabels:
-          name: ${NAME}-api
+          name: ${NAME}-${ZONE}-${COMPONENT}
       template:
         metadata:
-          name: ${NAME}-api
+          name: ${NAME}-${ZONE}-${COMPONENT}
           labels:
-            name: ${NAME}-api
-            app: ${GROUP_NAME}
+            name: ${NAME}-${ZONE}-${COMPONENT}
+            app: ${NAME}-${ZONE}
+            component: ${COMPONENT}
             role: api
         spec:
           containers:
-            - name: ${NAME}-api
+            - name: ${NAME}-${ZONE}-${COMPONENT}
               image: image-registry.openshift-image-registry.svc:5000/${APP_IMAGE_NAMESPACE}/${APP_IMAGE_NAME}:${APP_DEPLOYMENT_TAG}
               ports:
                 - containerPort: 3000
@@ -77,23 +81,23 @@ objects:
                 - name: MONGODB_USERNAME
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-mongodb
+                      name: ${NAME}-${ZONE}-mongodb
                       key: MONGODB_USERNAME
                 - name: MONGODB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-mongodb
+                      name: ${NAME}-${ZONE}-mongodb
                       key: MONGODB_PASSWORD
                 - name: MONGODB_DATABASE
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-mongodb
+                      name: ${NAME}-${ZONE}-mongodb
                       key: MONGODB_DATABASE
                 # API envs
                 - name: API_HOSTNAME
                   value: ${APPLICATION_DOMAIN}
                 - name: API_LOCATION
-                  value: https://${NAME}-api-${APPLICATION_DOMAIN}
+                  value: https://${NAME}-${ZONE}-${COMPONENT}-${APPLICATION_DOMAIN}
                 - name: API_PATH
                   value: ${API_PATH}
                 - name: API_PUBLIC_PATH
@@ -164,6 +168,15 @@ parameters:
     description: The name assigned to all of the frontend objects defined in this template.
     required: true
     value: nrpti
+  - name: ZONE
+    displayName: Deployment Zone
+    description: Deployment zone (dev, test, prod or PR number)
+    required: true
+  - name: COMPONENT
+    displayName: Component
+    description: Component name 
+    required: true
+    value: api
   - name: GROUP_NAME
     displayName: Group Name
     description: The name assigned to a group of objects deployed together
