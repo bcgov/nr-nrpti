@@ -1,15 +1,23 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: ${NAME}-mongodb
+  name: ${NAME}-${ZONE}-mongodb
   labels:
-    template: ${NAME}-mongodb
-    app: ${GROUP_NAME}
+    template: ${NAME}-${ZONE}-mongodb
+    app: ${NAME}
 parameters:
   - name: NAME
     displayName: Name
     description: The name assigned to all of the frontend objects defined in this template.
     value: nrpti
+  - name: ZONE
+    displayName: Deployment Zone
+    description: The zone or environment (dev, test, prod, PR number)
+    required: true
+  - name: COMPONENT
+    displayName: Component Name
+    description: The component part of the name (mongodb, api, etc)
+    value: mongodb
   - name: GROUP_NAME
     displayName: Group Name
     description: The name assigned to a group of objects deployed together
@@ -73,7 +81,7 @@ objects:
   - kind: Secret
     apiVersion: v1
     metadata:
-      name: ${NAME}-mongodb
+      name: ${NAME}-${ZONE}-${COMPONENT}
     stringData:
       MONGODB_ADMIN_PASSWORD: ${MONGODB_ADMIN_PASSWORD}
       MONGODB_DATABASE: ${MONGODB_DATABASE_NAME}
@@ -83,9 +91,11 @@ objects:
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
-      name: ${NAME}-mongodb-data
+      name: ${NAME}-${ZONE}-${COMPONENT}-data
       labels:
-        app: ${GROUP_NAME}
+        app: ${NAME}
+        zone: ${ZONE}
+        component: ${COMPONENT}
     spec:
       accessModes:
         - ReadWriteOnce
@@ -95,22 +105,26 @@ objects:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: mongodb
+      name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
-        app: ${GROUP_NAME}
+        app: ${NAME}
+        zone: ${ZONE}
+        component: ${COMPONENT}
     spec:
       ports:
-        - name: mongodb-${NAME}
+        - name: ${COMPONENT}-${NAME}
           port: 27017
           targetPort: 27017
       selector:
-        name: ${NAME}-mongodb
+        name: ${NAME}-${ZONE}-${COMPONENT}
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
-      name: ${NAME}-mongodb
+      name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
-        app: ${GROUP_NAME}
+        app: ${NAME}
+        zone: ${ZONE}
+        component: ${COMPONENT}
         role: database
     spec:
       strategy:
@@ -120,7 +134,7 @@ objects:
           imageChangeParams:
             automatic: true
             containerNames:
-              - ${NAME}-mongodb
+              - ${NAME}-${ZONE}-${COMPONENT}
             from:
               kind: ImageStreamTag
               namespace: ${APP_IMAGE_NAMESPACE}
@@ -128,17 +142,19 @@ objects:
       replicas: 1
       selector:
         matchLabels:
-          name: ${NAME}-mongodb
+          name: ${NAME}-${ZONE}-${COMPONENT}
       template:
         metadata:
-          name: ${NAME}-mongodb
+          name: ${NAME}-${ZONE}-${COMPONENT}
           labels:
-            name: ${NAME}-mongodb
-            app: ${GROUP_NAME}
+            name: ${NAME}-${ZONE}-${COMPONENT}
+            app: ${NAME}
+            zone: ${ZONE}
+            component: ${COMPONENT}
             role: database
         spec:
           containers:
-            - name: ${NAME}-mongodb
+            - name: ${NAME}-${ZONE}-${COMPONENT}
               image: image-registry.openshift-image-registry.svc:5000/${APP_IMAGE_NAMESPACE}/mongodb:${MONGO_VER}
               ports:
                 - containerPort: 27017
@@ -146,22 +162,22 @@ objects:
                 - name: MONGODB_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-mongodb
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: MONGODB_USERNAME
                 - name: MONGODB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-mongodb
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: MONGODB_PASSWORD
                 - name: MONGODB_DATABASE
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-mongodb
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: MONGODB_DATABASE
                 - name: MONGODB_ADMIN_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-mongodb
+                      name: ${NAME}-${ZONE}-${COMPONENT}
                       key: MONGODB_ADMIN_PASSWORD
               readinessProbe:
                 timeoutSeconds: 5
@@ -186,9 +202,9 @@ objects:
                   cpu: ${DATABASE_CPU_REQUESTS}
                   memory: ${DATABASE_MEMORY_REQUESTS}
               volumeMounts:
-                - name: ${NAME}-mongodb-data
+                - name: ${NAME}-${ZONE}-${COMPONENT}-data
                   mountPath: /var/lib/mongodb/data
           volumes:
-            - name: ${NAME}-mongodb-data
+            - name: ${NAME}-${ZONE}-${COMPONENT}-data
               persistentVolumeClaim:
-                claimName: ${NAME}-mongodb-data
+                claimName: ${NAME}-${ZONE}-${COMPONENT}-data
