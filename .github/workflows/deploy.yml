@@ -47,7 +47,8 @@ jobs:
           overwrite: true
           parameters: |
             -p NAME=nrpti
-            -p ZONE=${{ inputs.zone || inputs.target }}
+            -p ZONE=${{ inputs.zone || inputs.target || 'dev' }}
+            -p COMPONENT=mongodb
             -p TAG=${{ inputs.tag }}
             -p TARGET=${{ inputs.target }}
           triggers: ${{ inputs.triggers }}
