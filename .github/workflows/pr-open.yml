@@ -80,7 +80,7 @@ jobs:
           oc_token: ${{ secrets.oc_token }}
           file: ${{ matrix.file }}
           overwrite: true
-          parameters: -p NAME=nrpti -p ZONE=${{ github.event.number }} -p COMPONENT=${{ matrix.component }} -p GROUP_NAME=nrpti -p RUNTIME_IMAGE_TAG=${{ github.event.number }} -p APP_DEPLOYMENT_TAG=${{ github.event.number }}
+          parameters: -p NAME=nrpti -p ZONE=${{ github.event.number }} -p COMPONENT=${{ matrix.component }} -p GROUP_NAME=nrpti 
 
   # # https://github.com/bcgov/action-deploy-ghcr
   # deploys:
