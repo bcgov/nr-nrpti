@@ -4,7 +4,7 @@ metadata:
   name: ${NAME}-${ZONE}-mongodb
   labels:
     template: ${NAME}-${ZONE}-mongodb
-    app: ${NAME}
+    app: ${NAME}-${ZONE}
 parameters:
   - name: NAME
     displayName: Name
@@ -93,8 +93,7 @@ objects:
     metadata:
       name: ${NAME}-${ZONE}-${COMPONENT}-data
       labels:
-        app: ${NAME}
-        zone: ${ZONE}
+        app: ${NAME}-${ZONE}
         component: ${COMPONENT}
     spec:
       accessModes:
@@ -107,8 +106,7 @@ objects:
     metadata:
       name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
-        app: ${NAME}
-        zone: ${ZONE}
+        app: ${NAME}-${ZONE}
         component: ${COMPONENT}
     spec:
       ports:
@@ -122,8 +120,7 @@ objects:
     metadata:
       name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
-        app: ${NAME}
-        zone: ${ZONE}
+        app: ${NAME}-${ZONE}
         component: ${COMPONENT}
         role: database
     spec:
@@ -148,8 +145,7 @@ objects:
           name: ${NAME}-${ZONE}-${COMPONENT}
           labels:
             name: ${NAME}-${ZONE}-${COMPONENT}
-            app: ${NAME}
-            zone: ${ZONE}
+            app: ${NAME}-${ZONE}
             component: ${COMPONENT}
             role: database
         spec:
