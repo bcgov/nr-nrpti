@@ -68,7 +68,7 @@ objects:
         spec:
           containers:
             - name: ${NAME}-${ZONE}-${COMPONENT}
-              image: image-registry.openshift-image-registry.svc:5000/${RUNTIME_IMAGE_NAMESPACE}/${RUNTIME_IMAGE_NAME}:${RUNTIME_IMAGE_TAG}
+              image: ghcr.io/bcgov/nr-nrpti/public-nrpti:${ZONE}
               ports:
                 - containerPort: 8080
                   protocol: TCP

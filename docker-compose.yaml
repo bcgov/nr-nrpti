@@ -84,7 +84,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile-public-nrpti
     ports:
-      - 4400:4400
+      - 4400:8080
     depends_on:
       api:
         condition: service_started
