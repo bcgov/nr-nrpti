@@ -19,6 +19,10 @@ on:
         description: Deployment target; usually PR number, test or prod
         default: ${{ github.event.number }}
         type: string
+      zone:
+        description: Deployment zone; usually PR number, test or prod
+        default: ${{ github.event.number }}
+        type: string
       triggers:
         description: List of directories to trigger the deployment
         default: 'frontend backend'
@@ -39,9 +43,12 @@ jobs:
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
-          file: common/openshift.init.yml
+          file: common/openshift.database.yml
           overwrite: true
           parameters: |
+            -p NAME=nrpti
+            -p ZONE=${{ inputs.zone || inputs.target || 'dev' }}
+            -p COMPONENT=mongodb
             -p TAG=${{ inputs.tag }}
             -p TARGET=${{ inputs.target }}
           triggers: ${{ inputs.triggers }}

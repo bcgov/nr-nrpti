@@ -1,14 +1,15 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  name: ${NAME}
+  name: ${NAME}-${ZONE}-${COMPONENT}
 objects:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: ${NAME}
+      name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
-        app: ${GROUP_NAME}
+        app: ${NAME}-${ZONE}
+        component: ${COMPONENT}
     spec:
       ports:
         - name: 8080-tcp
@@ -16,20 +17,22 @@ objects:
           port: 8080
           targetPort: 8080
       selector:
-        app: ${GROUP_NAME}
-        deployment: ${NAME}
+        app: ${NAME}-${ZONE}
+        component: ${COMPONENT}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
       type: ClusterIP
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
-      name: ${NAME}
+      name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
-        app: ${GROUP_NAME}
+        app: ${NAME}-${ZONE}
+        component: ${COMPONENT}
     spec:
-      host: ${NAME}-${Host}
+      host: ${NAME}-${ZONE}-${COMPONENT}-${Host}
       to:
         kind: Service
-        name: ${NAME}
+        name: ${NAME}-${ZONE}-${COMPONENT}
         weight: 100
       port:
         targetPort: 8080-tcp
@@ -40,9 +43,10 @@ objects:
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
-      name: ${NAME}
+      name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
-        app: ${GROUP_NAME}
+        app: ${NAME}-${ZONE}
+        component: ${COMPONENT}
         role: frontend
     spec:
       strategy:
@@ -51,17 +55,19 @@ objects:
       revisionHistoryLimit: 5
       selector:
         matchLabels:
-          app: ${GROUP_NAME}
-          deployment: ${NAME}
+          app: ${NAME}-${ZONE}
+          component: ${COMPONENT}
+          deployment: ${NAME}-${ZONE}-${COMPONENT}
       template:
         metadata:
           labels:
-            app: ${GROUP_NAME}
-            deployment: ${NAME}
+            app: ${NAME}-${ZONE}
+            component: ${COMPONENT}
+            deployment: ${NAME}-${ZONE}-${COMPONENT}
             role: frontend
         spec:
           containers:
-            - name: ${NAME}
+            - name: ${NAME}-${ZONE}-${COMPONENT}
               image: image-registry.openshift-image-registry.svc:5000/${RUNTIME_IMAGE_NAMESPACE}/${RUNTIME_IMAGE_NAME}:${RUNTIME_IMAGE_TAG}
               ports:
                 - containerPort: 8080
@@ -112,9 +118,18 @@ objects:
           securityContext: {}
           schedulerName: default-scheduler
 parameters:
-  - description: A name used for all objects
+  - name: NAME
+    description: The name assigned to all of the frontend objects defined in this template.
     displayName: Name
-    name: NAME
+    required: true
+    value: nrpti
+  - name: ZONE
+    description: Deployment zone (dev, test, prod or PR number)
+    displayName: Deployment Zone
+    required: true
+  - name: COMPONENT
+    description: Component name
+    displayName: Component
     required: true
     value: nrced
   - description: A name used for all objects in the build or deploy group

@@ -53,11 +53,7 @@ jobs:
           oc_token: ${{ secrets.oc_token }}
           file: ./common/openshift.database.yml
           overwrite: true
-          parameters:
-            -p MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }}
-            -p MONGODB_DATABASE_NAME=${{ secrets.MONGODB_DATABASE_NAME }}
-            -p MONGODB_USER=${{ secrets.MONGODB_USER }}
-            -p MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}
+          parameters: -p NAME=nrpti -p ZONE=${{ github.event.number }} -p COMPONENT=mongodb -p MONGODB_ADMIN_PASSWORD=${{ secrets.MONGODB_ADMIN_PASSWORD }} -p MONGODB_DATABASE_NAME=${{ secrets.MONGODB_DATABASE_NAME }} -p MONGODB_USER=${{ secrets.MONGODB_USER }} -p MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}
 
   deploy:
     name: Deploy
@@ -69,10 +65,12 @@ jobs:
         include:
           - package: api
             file: ./tools/api/api.dc.yaml
+            component: api
           # - component: admin-nrpti
           #   file: ./tools/angular-on-nginx/admin-nrced.dc.yaml
           - package: public-nrpti
             file: ./tools/angular-on-nginx/public-nrced.dc.yaml
+            component: nrced
     steps:
       - name: Deploy ${{ matrix.package }}
         uses: bcgov/action-deployer-openshift@v4.0.0
@@ -82,6 +80,7 @@ jobs:
           oc_token: ${{ secrets.oc_token }}
           file: ${{ matrix.file }}
           overwrite: true
+          parameters: -p NAME=nrpti -p ZONE=${{ github.event.number }} -p COMPONENT=${{ matrix.component }} -p GROUP_NAME=nrpti 
 
   # # https://github.com/bcgov/action-deploy-ghcr
   # deploys:
