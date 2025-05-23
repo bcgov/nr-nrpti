@@ -42,7 +42,7 @@ jobs:
 
   init:
     name: Init
-    # needs: [builds]
+    needs: [builds]
     runs-on: ubuntu-24.04
     steps:
       - name: Deploy Init
