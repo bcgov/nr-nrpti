@@ -20,7 +20,7 @@ on:
         default: ${{ github.event.number }}
         type: string
       zone:
-        description: Deployment zone; usually PR number, test or prod (standardized naming)
+        description: Deployment zone; usually PR number, test or prod
         default: ${{ github.event.number }}
         type: string
       triggers:
