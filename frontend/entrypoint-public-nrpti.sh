@@ -30,4 +30,4 @@ cat > env.js << EOF
 EOF
 
 # Start the server
-exec serve -s /app/dist/public-nrced -p 4400
+exec serve -s /app/dist/public-nrced -p 8080
